@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Restaurant.Models
+﻿namespace Restaurant.Models
 {
     internal class Restaurant
     {
@@ -21,19 +15,6 @@ namespace Restaurant.Models
             _messenger = messenger;
         }
 
-        public void BookFreeTable(int countOfPersons)
-        {
-            Table? table = null;
-
-            lock (locker)
-            {
-                table = _tables.FirstOrDefault(t => t.SeatsCount > countOfPersons && t.State == State.Free);
-                table?.SetState(State.Booked);
-            }
-
-            _messenger.Booking(table);
-        }
-
         public void BookFreeTableAsync(int countOfPersons)
         {
             Task.Run(async () =>
@@ -48,18 +29,6 @@ namespace Restaurant.Models
 
                 await _messenger.BookingAsync(table);
             });
-        }
-        public void MakeFreeTable(int id)
-        {
-            Table? table = null;
-
-            lock (locker)
-            {
-                table = _tables.FirstOrDefault(t => t.Id == id);
-                table?.SetState(State.Free);
-            }           
-
-            _messenger.MakeFree(table);
         }
 
         public void MakeFreeTableAsync(int id)
@@ -91,7 +60,7 @@ namespace Restaurant.Models
                     
                     _messenger.MakeFreeAll();
                     
-                    await Task.Delay(20000);
+                    await Task.Delay(60000);
                 }
             });
         }

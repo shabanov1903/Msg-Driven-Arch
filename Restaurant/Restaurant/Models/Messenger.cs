@@ -1,57 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Messaging;
 
 namespace Restaurant.Models
 {
     internal class Messenger
     {
+        private readonly Producer _producer;
+
         private readonly string message_no_seats = "Все столы заняты!";
         private readonly string message_table_booked = "Стол {0} забронирован для вас!";
         private readonly string message_table_not_found = "Такого стола не существует!";
         private readonly string message_table_rided = "Стол {0} освобожден!";
-        private readonly string message_all_tables_free = "Все столы освобождены";
+        private readonly string message_all_tables_free = "Все столы освобождены...";
+
+        internal Messenger(Producer producer) => _producer = producer;
 
         private readonly int delay = 3000;
-
-        public void Send(string text)
-        {
-            Thread.Sleep(delay);
-
-            Console.WriteLine(text);
-        }
 
         public async Task SendAsync(string text)
         {
             await Task.Delay(delay);
-            
-            Console.WriteLine(text);
-        }
 
-        public void Booking(Table? table)
-        {
-            if (table == null)
-            {
-                Send(message_no_seats);
-            }
-            else
-            {
-                Send(String.Format(message_table_booked, table.Id));
-            }
-        }
-
-        public void MakeFree(Table? table)
-        {
-            if (table == null)
-            {
-                Send(message_table_not_found);
-            }
-            else
-            {
-                Send(String.Format(message_table_rided, table.Id));
-            }
+            _producer.Send(text);
         }
 
         public async Task BookingAsync(Table? table)
@@ -80,7 +49,7 @@ namespace Restaurant.Models
 
         public void MakeFreeAll()
         {
-            Console.WriteLine(message_all_tables_free);
+            _producer.Send(message_all_tables_free);
         }
     }
 }
