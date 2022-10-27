@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using rest = Restaurant.Models;
 
 var serviceCollection = new ServiceCollection()
-    .AddSingleton<Producer>(new Producer("BookingNotification"))
+    .AddSingleton<Producer>()
     .AddSingleton<rest.Messenger>(provider =>
      {
          var producer = provider.GetRequiredService<Producer>();

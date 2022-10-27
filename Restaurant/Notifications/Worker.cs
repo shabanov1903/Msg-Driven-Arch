@@ -14,7 +14,7 @@ namespace Notifications
 
         public Worker()
         {
-            _consumer = new Consumer("BookingNotification");
+            _consumer = new Consumer();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)

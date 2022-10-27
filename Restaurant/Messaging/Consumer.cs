@@ -12,7 +12,7 @@ namespace Messaging
         private readonly IConnection _connection;
         private readonly IModel _channel;
         
-        public Consumer(string queueName, string hostName = "localhost")
+        public Consumer(string queueName = "", string hostName = "localhost")
         {
             _queueName = queueName;
             _hostName = "rattlesnake.rmq.cloudamqp.com"; // set hostName;
@@ -31,7 +31,7 @@ namespace Messaging
 
         public void Receive (EventHandler<BasicDeliverEventArgs> receiveCallback)
         {
-            _channel.ExchangeDeclare(exchange: "direct_exchange", type: "direct"); // declare direct
+            _channel.ExchangeDeclare(exchange: "direct_exchange", type: ExchangeType.Fanout); // declare direct
             
             _channel.QueueDeclare(queue: _queueName,
                 durable: false,

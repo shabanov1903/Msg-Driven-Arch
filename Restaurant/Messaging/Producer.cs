@@ -9,7 +9,7 @@ namespace Messaging
         private readonly string _queueName;
         private readonly string _hostName;
 
-        public Producer(string queueName, string hostName = "localhost")
+        public Producer(string queueName = "", string hostName = "localhost")
         {
             _queueName = queueName;
             _hostName = "rattlesnake.rmq.cloudamqp.com"; // hostName
@@ -31,7 +31,7 @@ namespace Messaging
             
             channel.ExchangeDeclare(
                 "direct_exchange",
-                "direct",
+                ExchangeType.Fanout,
                 false,
                 false,
                 null
