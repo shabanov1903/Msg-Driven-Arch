@@ -1,40 +1,43 @@
-﻿using System.Diagnostics;
+﻿using Messaging;
+using Microsoft.Extensions.DependencyInjection;
 using rest = Restaurant.Models;
 
-var restaurant = new rest.Restaurant(10, new rest.Messenger());
+var serviceCollection = new ServiceCollection()
+    .AddSingleton<Producer>()
+    .AddSingleton<rest.Messenger>(provider =>
+     {
+         var producer = provider.GetRequiredService<Producer>();
+         return new rest.Messenger(producer);
+     })
+    .AddSingleton<rest.Restaurant>(provider =>
+    {
+        var messenger = provider.GetRequiredService<rest.Messenger>();
+        ushort max = 10;
+        return new rest.Restaurant(max, messenger);
+    });
+
+var serviceProvider = serviceCollection.BuildServiceProvider();
+
+var restaurant = serviceProvider.GetService<rest.Restaurant>();
+
 restaurant.StartClearJob();
 
 while(true)
 {
     Console.WriteLine("Выберите действите:");
-    Console.WriteLine(" 0 - синхронно забронировать \n 1 - асинхронно забронировать \n 2 - синхронно освободить \n 3 - асинхронно освободить ");
+    Console.WriteLine(" 0 - забронировать \n 1 - освободить ");
 
-    if (!int.TryParse(Console.ReadLine(), out var choice) && choice is not (0 or 1 or 3 or 4))
+    if (!int.TryParse(Console.ReadLine(), out var choice) && choice is not (0 or 1))
     {
         Console.WriteLine("Повторите ввод");
         continue;
     }
 
-    var timer = new Stopwatch();
-    timer.Start();
-
     switch (choice)
     {
         case 0:
-            restaurant.BookFreeTable(1); break;
-        case 1:
             restaurant.BookFreeTableAsync(1); break;
-        case 2:
-            {
-                Console.WriteLine("Какой стол освободить?");
-                if (!int.TryParse(Console.ReadLine(), out var number))
-                {
-                    Console.WriteLine("Повторите ввод");
-                    continue;
-                }
-                restaurant.MakeFreeTable(number);
-            }; break;
-        case 3:
+        case 1:
             {
                 Console.WriteLine("Какой стол освободить?");
                 if (!int.TryParse(Console.ReadLine(), out var number))
@@ -45,7 +48,4 @@ while(true)
                 restaurant.MakeFreeTableAsync(number);
             }; break;
     }
-
-    timer.Stop();
-    Console.WriteLine($"Затрачено: {timer.Elapsed.Seconds:00}:{timer.Elapsed.Milliseconds:00}мс");
 }
