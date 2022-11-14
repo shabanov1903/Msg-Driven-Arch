@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Restaurant.Booking;
+using Restaurant.Booking.Consumers;
 
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 
@@ -10,12 +11,33 @@ Host.CreateDefaultBuilder(args)
     {
         services.AddMassTransit(x =>
         {
+            x.AddConsumer<RestaurantBookingRequestConsumer>()
+                .Endpoint(e =>
+                {
+                    e.Temporary = true;
+                });
+
+            x.AddConsumer<BookingRequestFaultConsumer>()
+                .Endpoint(e =>
+                {
+                    e.Temporary = true;
+                });
+
+            x.AddSagaStateMachine<RestaurantBookingSaga, RestaurantBooking>()
+                .Endpoint(e => e.Temporary = true)
+                .InMemoryRepository();
+
+            x.AddDelayedMessageScheduler();
+
             x.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host("rattlesnake.rmq.cloudamqp.com", 5672, "wqxcpmsj", h =>
+                cfg.UseDelayedMessageScheduler();
+                cfg.UseInMemoryOutbox();
+
+                cfg.Host("localhost", h =>
                 {
-                    h.Username("wqxcpmsj");
-                    h.Password("5ycB-owHLnQbJmWGDI1Iq7eAMcuOZile");
+                    h.Username("guest");
+                    h.Password("guest");
                 });
 
                 cfg.ConfigureEndpoints(context);
@@ -23,6 +45,8 @@ Host.CreateDefaultBuilder(args)
         });
         services.AddMassTransitHostedService(true);
 
+        services.AddTransient<RestaurantBooking>();
+        services.AddTransient<RestaurantBookingSaga>();
         services.AddTransient<Restaurant.Booking.Restaurant>();
 
         services.AddHostedService<Worker>();

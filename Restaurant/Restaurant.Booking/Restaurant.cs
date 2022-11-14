@@ -17,7 +17,6 @@
             Console.WriteLine("Спасибо за Ваше обращение, я подберу столик и подтвержу вашу бронь");
 
             var table = _tables.FirstOrDefault(t => t.SeatsCount > countOfPersons && t.State == State.Free);
-            await Task.Delay(1000 * 5);
             return table?.SetState(State.Booked);
         }
     }

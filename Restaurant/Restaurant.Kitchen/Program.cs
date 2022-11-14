@@ -4,19 +4,39 @@ using Microsoft.Extensions.Hosting;
 using Restaurant.Kitchen;
 using Restaurant.Kitchen.Consumers;
 
+Console.OutputEncoding = System.Text.Encoding.UTF8;
+
 Host.CreateDefaultBuilder(args)
     .ConfigureServices((hostContext, services) =>
     {
         services.AddMassTransit(x =>
         {
-            x.AddConsumer<KitchenTableBookedConsumer>();
+            x.AddConsumer<KitchenBookingRequestedConsumer>(
+                configurator =>
+                {
+                    // Empty Congiguration
+                })
+                .Endpoint(e =>
+                {
+                    e.Temporary = true;
+                }); ;
+
+            x.AddConsumer<KitchenBookingRequestFaultConsumer>()
+                .Endpoint(e =>
+                {
+                    e.Temporary = true;
+                });
+            x.AddDelayedMessageScheduler();
 
             x.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host("rattlesnake.rmq.cloudamqp.com", 5672, "wqxcpmsj", h =>
+                cfg.UseDelayedMessageScheduler();
+                cfg.UseInMemoryOutbox();
+
+                cfg.Host("localhost", h =>
                 {
-                    h.Username("wqxcpmsj");
-                    h.Password("5ycB-owHLnQbJmWGDI1Iq7eAMcuOZile");
+                    h.Username("guest");
+                    h.Password("guest");
                 });
 
                 cfg.ConfigureEndpoints(context);

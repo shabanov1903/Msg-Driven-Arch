@@ -16,16 +16,17 @@ namespace Restaurant.Booking
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {                
+        {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(10000, stoppingToken);
-                Console.WriteLine("Желаете забронировать столик?");
-                var result = await _restaurant.BookFreeTableAsync(1);
+                await Task.Delay(1000, stoppingToken);
+                Console.WriteLine("Привет! Желаете забронировать столик?");
 
-                await _bus.Publish(new TableBooked(NewId.NextGuid(), NewId.NextGuid(), result ?? false),
-                    context => context.Durable = false, stoppingToken);
+                var dateTime = DateTime.Now;
+                await _bus.Publish(
+                    (IBookingRequest)new BookingRequest(NewId.NextGuid(), NewId.NextGuid(), null, dateTime),
+                    stoppingToken);
             }
         }
     }
