@@ -14,18 +14,21 @@ Host.CreateDefaultBuilder(args)
             x.AddConsumer<KitchenBookingRequestedConsumer>(
                 configurator =>
                 {
-                    // Empty Congiguration
-                })
-                .Endpoint(e =>
-                {
-                    e.Temporary = true;
-                }); ;
-
-            x.AddConsumer<KitchenBookingRequestFaultConsumer>()
-                .Endpoint(e =>
-                {
-                    e.Temporary = true;
+//                    configurator.UseScheduledRedelivery(r =>
+//                    {
+//                        r.Intervals(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(20),
+//                            TimeSpan.FromSeconds(30));
+//                    });
+//                    configurator.UseMessageRetry(
+//                        r =>
+//                        {
+//                            r.Incremental(3, TimeSpan.FromSeconds(1),
+//                                TimeSpan.FromSeconds(2));
+//                        }
+//                    );
                 });
+
+            x.AddConsumer<KitchenBookingRequestFaultConsumer>();
             x.AddDelayedMessageScheduler();
 
             x.UsingRabbitMq((context, cfg) =>

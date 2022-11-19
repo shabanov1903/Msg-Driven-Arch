@@ -17,7 +17,7 @@ namespace Restaurant.Notification.Consumers
         {
             _notifier.Notify(context.Message.OrderId, context.Message.ClientId, context.Message.Message);
 
-           return context.ConsumeCompleted;
+           return Task.CompletedTask;
         }
     }
 }
