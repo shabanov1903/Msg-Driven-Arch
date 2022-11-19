@@ -3,7 +3,7 @@ using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Notifications;
-using Notifications.Consumers;
+using Restaurant.Notification.Consumers;
 
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 
@@ -13,15 +13,14 @@ IHostBuilder CreateHostBuilder(string[] args) =>
          {
              services.AddMassTransit(x =>
              {
-                 x.AddConsumer<NotifierTableBookedConsumer>();
-                 x.AddConsumer<KitchenReadyConsumer>();
+                 x.AddConsumer<NotifyConsumer>();
 
                  x.UsingRabbitMq((context, cfg) =>
                  {
-                     cfg.Host("rattlesnake.rmq.cloudamqp.com", 5672, "wqxcpmsj", h =>
+                     cfg.Host("localhost", h =>
                      {
-                         h.Username("wqxcpmsj");
-                         h.Password("5ycB-owHLnQbJmWGDI1Iq7eAMcuOZile");
+                         h.Username("guest");
+                         h.Password("guest");
                      });
 
                      cfg.UseMessageRetry(r =>

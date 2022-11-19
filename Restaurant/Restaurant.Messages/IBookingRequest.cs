@@ -2,7 +2,7 @@
 
 namespace Restaurant.Messages
 {
-    public interface ITableBooked
+    public interface IBookingRequest
     {
         public Guid OrderId { get; }
         
@@ -10,22 +10,22 @@ namespace Restaurant.Messages
         
         public Dish? PreOrder { get; }
         
-        public bool Success { get; }
+        public DateTime CreationDate { get; }
     }
 
-    public class TableBooked : ITableBooked
+    public class BookingRequest : IBookingRequest
     {
-        public TableBooked(Guid orderId, Guid clientId, bool success, Dish? preOrder = null)
+        public BookingRequest(Guid orderId, Guid clientId, Dish? preOrder, DateTime creationDate)
         {
             OrderId = orderId;
             ClientId = clientId;
-            Success = success;
             PreOrder = preOrder;
+            CreationDate = creationDate;
         }
 
         public Guid OrderId { get; }
         public Guid ClientId { get; }
         public Dish? PreOrder { get; }
-        public bool Success { get; }
+        public DateTime CreationDate { get; }
     }
 }
