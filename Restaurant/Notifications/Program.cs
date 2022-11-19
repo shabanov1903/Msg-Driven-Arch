@@ -13,8 +13,7 @@ IHostBuilder CreateHostBuilder(string[] args) =>
          {
              services.AddMassTransit(x =>
              {
-                 x.AddConsumer<NotifyConsumer>()
-                  .Endpoint(e => e.Temporary = true);
+                 x.AddConsumer<NotifyConsumer>();
 
                  x.UsingRabbitMq((context, cfg) =>
                  {
