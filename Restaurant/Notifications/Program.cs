@@ -1,5 +1,4 @@
-﻿using GreenPipes;
-using MassTransit;
+﻿using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Notifications;
@@ -35,7 +34,12 @@ IHostBuilder CreateHostBuilder(string[] args) =>
 
              });
              services.AddSingleton<Notifier>();
-             services.AddMassTransitHostedService(true);
+             services.Configure<MassTransitHostOptions>(options =>
+             {
+                 options.WaitUntilStarted = true;
+                 options.StartTimeout = TimeSpan.FromSeconds(30);
+                 options.StopTimeout = TimeSpan.FromMinutes(1);
+             });
          });
 
 CreateHostBuilder(args).Build().Run();

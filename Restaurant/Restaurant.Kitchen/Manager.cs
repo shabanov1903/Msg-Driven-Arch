@@ -4,7 +4,7 @@ using Restaurant.Messages;
 
 namespace Restaurant.Kitchen
 {
-    internal class Manager
+    public class Manager
     {
         private readonly IBus _bus;
 
